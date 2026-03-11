@@ -62,7 +62,7 @@ export default async function DashboardPage() {
                 <p className="text-xs text-muted-foreground">{u.id.slice(0, 8)}...</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-muted-foreground">{u.plan?.name ?? "Free"}</p>
+                <p className="text-xs text-muted-foreground">{(u.plan as unknown as { name: string })?.name ?? "Free"}</p>
                 <p className="text-xs text-muted-foreground">{new Date(u.created_at).toLocaleDateString()}</p>
               </div>
             </div>
