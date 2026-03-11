@@ -21,11 +21,12 @@ export async function POST(request: NextRequest) {
   try {
     const event: StravaWebhookEvent = await request.json();
 
-    // Process asynchronously — Strava expects a 200 within 2 seconds
-    processActivityEvent(event).catch(console.error);
+    // Process synchronously — serverless functions die after response
+    await processActivityEvent(event);
 
     return NextResponse.json({ status: "ok" }, { status: 200 });
-  } catch {
-    return NextResponse.json({ error: "Bad request" }, { status: 400 });
+  } catch (error) {
+    console.error("Webhook processing error:", error);
+    return NextResponse.json({ status: "ok" }, { status: 200 });
   }
 }

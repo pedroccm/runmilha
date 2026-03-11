@@ -57,7 +57,7 @@ export const PLANS = {
 
 export type PlanSlug = keyof typeof PLANS;
 
-export const SUPPORTED_ACTIVITY_TYPES = ["Run", "Ride", "VirtualRun", "VirtualRide"] as const;
+export const SUPPORTED_ACTIVITY_TYPES = ["Run", "Ride", "Walk", "Hike", "VirtualRun", "VirtualRide"] as const;
 
 export const STRAVA_OAUTH_URL = "https://www.strava.com/oauth/authorize";
 export const STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token";
