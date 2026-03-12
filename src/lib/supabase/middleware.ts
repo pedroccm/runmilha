@@ -36,6 +36,8 @@ export async function updateSession(request: NextRequest) {
 
   const isPublicPage =
     request.nextUrl.pathname === "/" ||
+    request.nextUrl.pathname.startsWith("/privacy") ||
+    request.nextUrl.pathname.startsWith("/terms") ||
     request.nextUrl.pathname.startsWith("/api/");
 
   // Redirect unauthenticated users to login

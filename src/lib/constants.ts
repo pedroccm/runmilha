@@ -59,6 +59,17 @@ export type PlanSlug = keyof typeof PLANS;
 
 export const SUPPORTED_ACTIVITY_TYPES = ["Run", "Ride", "Walk", "Hike", "VirtualRun", "VirtualRide"] as const;
 
+// Strava
 export const STRAVA_OAUTH_URL = "https://www.strava.com/oauth/authorize";
 export const STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token";
 export const STRAVA_API_BASE = "https://www.strava.com/api/v3";
+
+// Garmin Health API
+export const GARMIN_OAUTH_URL = "https://connect.garmin.com/oauthConfirm";
+export const GARMIN_TOKEN_URL = "https://connectapi.garmin.com/oauth-service/oauth/token";
+export const GARMIN_API_BASE = "https://apis.garmin.com/wellness-api/rest";
+
+// Polar AccessLink
+export const POLAR_OAUTH_URL = "https://flow.polar.com/oauth2/authorization";
+export const POLAR_TOKEN_URL = "https://polarremote.com/v2/oauth2/token";
+export const POLAR_API_BASE = "https://www.polaraccesslink.com/v3";

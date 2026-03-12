@@ -123,6 +123,8 @@ export async function processActivityEvent(event: StravaWebhookEvent) {
     .upsert(
       {
         user_id: connection.user_id,
+        provider: "strava",
+        provider_activity_id: String(stravaActivity.id),
         strava_activity_id: stravaActivity.id,
         type: stravaActivity.type,
         name: stravaActivity.name,

@@ -50,6 +50,14 @@ export default function LandingPage() {
               </div>
               <span className="font-semibold">RunMilha</span>
             </div>
+            <div className="flex gap-6 text-sm text-muted-foreground">
+              <Link href="/privacy" className="hover:text-foreground transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/terms" className="hover:text-foreground transition-colors">
+                Terms of Service
+              </Link>
+            </div>
             <p className="text-sm text-muted-foreground">
               &copy; {new Date().getFullYear()} RunMilha. All rights reserved.
             </p>

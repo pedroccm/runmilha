@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { StravaConnectButton } from "@/components/strava/connect-button";
+import { GarminConnectButton } from "@/components/garmin/connect-button";
+import { PolarConnectButton } from "@/components/polar/connect-button";
 import { formatMilhas } from "@/lib/utils";
 
 export default async function SettingsPage() {
@@ -12,11 +14,11 @@ export default async function SettingsPage() {
     .eq("id", user?.id)
     .single();
 
-  const { data: strava } = await supabase
-    .from("rm_strava_connections")
-    .select("*")
-    .eq("user_id", user?.id)
-    .single();
+  const [{ data: strava }, { data: garmin }, { data: polar }] = await Promise.all([
+    supabase.from("rm_strava_connections").select("*").eq("user_id", user?.id).single(),
+    supabase.from("rm_garmin_connections").select("*").eq("user_id", user?.id).single(),
+    supabase.from("rm_polar_connections").select("*").eq("user_id", user?.id).single(),
+  ]);
 
   // User's redeemed rewards
   const { data: redemptions } = await supabase
@@ -57,35 +59,104 @@ export default async function SettingsPage() {
         </div>
       </div>
 
-      {/* Strava Connection */}
+      {/* Connected Services */}
       <div className="bg-card border border-border rounded-xl p-6">
-        <h2 className="font-semibold mb-4">Strava Connection</h2>
-        {strava ? (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
-                <span className="text-orange-500 font-bold text-sm">S</span>
+        <h2 className="font-semibold mb-4">Connected Services</h2>
+        <div className="space-y-4">
+          {/* Strava */}
+          {strava ? (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#FC4C02]/10 flex items-center justify-center">
+                  <span className="text-[#FC4C02] font-bold text-sm">S</span>
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Strava</p>
+                  <p className="text-xs text-muted-foreground">
+                    Athlete ID: {strava.strava_athlete_id}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium text-sm">Connected</p>
-                <p className="text-xs text-muted-foreground">
-                  Athlete ID: {strava.strava_athlete_id}
-                </p>
-              </div>
+              <span className="text-xs text-green-500 font-medium bg-green-500/10 px-2 py-1 rounded-full">
+                Active
+              </span>
             </div>
-            <span className="text-xs text-green-500 font-medium bg-green-500/10 px-2 py-1 rounded-full">
-              Active
-            </span>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              Connect your Strava account to automatically sync activities and
-              earn milhas.
-            </p>
-            <StravaConnectButton />
-          </div>
-        )}
+          ) : (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#FC4C02]/10 flex items-center justify-center">
+                  <span className="text-[#FC4C02] font-bold text-sm">S</span>
+                </div>
+                <p className="font-medium text-sm">Strava</p>
+              </div>
+              <StravaConnectButton />
+            </div>
+          )}
+
+          <div className="border-t border-border" />
+
+          {/* Garmin */}
+          {garmin ? (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#007CC3]/10 flex items-center justify-center">
+                  <span className="text-[#007CC3] font-bold text-sm">G</span>
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Garmin</p>
+                  <p className="text-xs text-muted-foreground">
+                    User ID: {garmin.garmin_user_id}
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-green-500 font-medium bg-green-500/10 px-2 py-1 rounded-full">
+                Active
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#007CC3]/10 flex items-center justify-center">
+                  <span className="text-[#007CC3] font-bold text-sm">G</span>
+                </div>
+                <p className="font-medium text-sm">Garmin</p>
+              </div>
+              <GarminConnectButton />
+            </div>
+          )}
+
+          <div className="border-t border-border" />
+
+          {/* Polar */}
+          {polar ? (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#D30024]/10 flex items-center justify-center">
+                  <span className="text-[#D30024] font-bold text-sm">P</span>
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Polar</p>
+                  <p className="text-xs text-muted-foreground">
+                    User ID: {polar.polar_user_id}
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-green-500 font-medium bg-green-500/10 px-2 py-1 rounded-full">
+                Active
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#D30024]/10 flex items-center justify-center">
+                  <span className="text-[#D30024] font-bold text-sm">P</span>
+                </div>
+                <p className="font-medium text-sm">Polar</p>
+              </div>
+              <PolarConnectButton />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* My Rewards */}
