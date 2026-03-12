@@ -33,6 +33,14 @@ export default function LoginPage() {
     router.refresh();
   }
 
+  function handleStravaLogin() {
+    const clientId = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
+    const redirectUri = `${window.location.origin}/api/auth/strava`;
+    const scope = "read,activity:read_all";
+    const url = `https://www.strava.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&approval_prompt=auto`;
+    window.location.href = url;
+  }
+
   async function handleGoogleLogin() {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
@@ -112,6 +120,17 @@ export default function LoginPage() {
           <span className="bg-background px-2 text-muted-foreground">or</span>
         </div>
       </div>
+
+      <button
+        onClick={handleStravaLogin}
+        className="w-full py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-white"
+        style={{ backgroundColor: "#FC4C02" }}
+      >
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" />
+        </svg>
+        Continue with Strava
+      </button>
 
       <button
         onClick={handleGoogleLogin}
