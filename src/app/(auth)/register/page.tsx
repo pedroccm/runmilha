@@ -155,21 +155,6 @@ export default function RegisterPage() {
 
       <button
         onClick={() => {
-          const clientId = process.env.NEXT_PUBLIC_GARMIN_CLIENT_ID;
-          const redirectUri = `${window.location.origin}/api/auth/garmin`;
-          window.location.href = `https://connect.garmin.com/oauthConfirm?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=activity_read`;
-        }}
-        className="w-full py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-white"
-        style={{ backgroundColor: "#007CC3" }}
-      >
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-        </svg>
-        Sign up with Garmin
-      </button>
-
-      <button
-        onClick={() => {
           const clientId = process.env.NEXT_PUBLIC_POLAR_CLIENT_ID;
           const redirectUri = `${window.location.origin}/api/auth/polar`;
           window.location.href = `https://flow.polar.com/oauth2/authorization?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=accesslink.read_all`;

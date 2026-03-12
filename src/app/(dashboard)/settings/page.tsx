@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { StravaConnectButton } from "@/components/strava/connect-button";
-import { GarminConnectButton } from "@/components/garmin/connect-button";
+
 import { PolarConnectButton } from "@/components/polar/connect-button";
 import { formatMilhas } from "@/lib/utils";
 
@@ -90,38 +90,6 @@ export default async function SettingsPage() {
                 <p className="font-medium text-sm">Strava</p>
               </div>
               <StravaConnectButton />
-            </div>
-          )}
-
-          <div className="border-t border-border" />
-
-          {/* Garmin */}
-          {garmin ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#007CC3]/10 flex items-center justify-center">
-                  <span className="text-[#007CC3] font-bold text-sm">G</span>
-                </div>
-                <div>
-                  <p className="font-medium text-sm">Garmin</p>
-                  <p className="text-xs text-muted-foreground">
-                    User ID: {garmin.garmin_user_id}
-                  </p>
-                </div>
-              </div>
-              <span className="text-xs text-green-500 font-medium bg-green-500/10 px-2 py-1 rounded-full">
-                Active
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#007CC3]/10 flex items-center justify-center">
-                  <span className="text-[#007CC3] font-bold text-sm">G</span>
-                </div>
-                <p className="font-medium text-sm">Garmin</p>
-              </div>
-              <GarminConnectButton />
             </div>
           )}
 
