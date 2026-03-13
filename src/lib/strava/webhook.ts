@@ -128,6 +128,15 @@ export async function processActivityEvent(event: StravaWebhookEvent) {
     currentMonthlyEarned,
   });
 
+  // Check if activity was already credited before upserting
+  const { data: existingActivity } = await supabase
+    .from("rm_activities")
+    .select("milhas_earned, processed")
+    .eq("strava_activity_id", stravaActivity.id)
+    .single();
+
+  const previouslyEarned = existingActivity?.milhas_earned ?? 0;
+
   // Upsert activity
   const { data: activity } = await supabase
     .from("rm_activities")
@@ -152,8 +161,11 @@ export async function processActivityEvent(event: StravaWebhookEvent) {
     .select()
     .single();
 
-  // Credit wallet if earned milhas
-  if (conversion.milhasEarned > 0 && activity) {
+  // Calculate the delta to credit/debit (handles updates and duplicates)
+  const milhasDelta = conversion.milhasEarned - previouslyEarned;
+
+  // Credit wallet only if there's a positive delta
+  if (milhasDelta > 0 && activity) {
     const { data: wallet } = await supabase
       .from("rm_wallets")
       .select("*")
@@ -161,12 +173,12 @@ export async function processActivityEvent(event: StravaWebhookEvent) {
       .single();
 
     if (wallet) {
-      const newBalance = wallet.balance + conversion.milhasEarned;
+      const newBalance = wallet.balance + milhasDelta;
       await supabase
         .from("rm_wallets")
         .update({
           balance: newBalance,
-          total_earned: wallet.total_earned + conversion.milhasEarned,
+          total_earned: wallet.total_earned + milhasDelta,
           updated_at: new Date().toISOString(),
         })
         .eq("id", wallet.id);
@@ -175,7 +187,7 @@ export async function processActivityEvent(event: StravaWebhookEvent) {
         user_id: connection.user_id,
         wallet_id: wallet.id,
         type: "earn",
-        amount: conversion.milhasEarned,
+        amount: milhasDelta,
         balance_after: newBalance,
         description: `${stravaActivity.type}: ${stravaActivity.name} (${distanceKm.toFixed(1)} km)`,
         reference_type: "activity",

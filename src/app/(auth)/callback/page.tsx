@@ -31,12 +31,14 @@ function CallbackHandler() {
     }
 
     // Handle regular OAuth (Google, etc)
-    supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") {
         router.push("/dashboard");
         router.refresh();
       }
     });
+
+    return () => subscription.unsubscribe();
   }, [router, searchParams]);
 
   return (

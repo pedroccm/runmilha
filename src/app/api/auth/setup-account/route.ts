@@ -23,19 +23,7 @@ export async function POST(req: NextRequest) {
 
   const admin = createAdminClient();
 
-  // Check email not already taken
-  const { data: existing } = await admin
-    .from("auth.users")
-    .select("id")
-    .eq("email", email)
-    .neq("id", user.id)
-    .single();
-
-  if (existing) {
-    return NextResponse.json({ error: "Email already in use" }, { status: 409 });
-  }
-
-  // Update email and set password
+  // Update email and set password — Supabase returns error if email already taken
   const { error } = await admin.auth.admin.updateUserById(user.id, {
     email,
     password,
