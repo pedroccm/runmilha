@@ -8,9 +8,20 @@ export function verifyWebhookToken(token: string): boolean {
 }
 
 export async function processActivityEvent(event: StravaWebhookEvent) {
+  const supabaseAdmin = createAdminClient();
+
+  // Athlete deauthorized the app from Strava's side — clean up connection
+  if (event.object_type === "athlete" && event.aspect_type === "delete") {
+    await supabaseAdmin
+      .from("rm_strava_connections")
+      .delete()
+      .eq("strava_athlete_id", event.owner_id);
+    return;
+  }
+
   if (event.object_type !== "activity") return;
 
-  const supabase = createAdminClient();
+  const supabase = supabaseAdmin;
 
   // Find the user with this Strava athlete ID
   const { data: connection } = await supabase

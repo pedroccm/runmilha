@@ -63,26 +63,32 @@ export async function GET(request: NextRequest) {
 
       userId = newUser.user.id;
 
-      // Wait for the trigger to create rm_users + rm_wallets, then update with Strava data
-      await new Promise((r) => setTimeout(r, 500));
+      try {
+        // Wait for the trigger to create rm_users + rm_wallets, then update with Strava data
+        await new Promise((r) => setTimeout(r, 500));
 
-      await admin
-        .from("rm_users")
-        .update({
-          full_name: fullName,
-          avatar_url: athlete.profile,
-        })
-        .eq("id", userId);
+        await admin
+          .from("rm_users")
+          .update({
+            full_name: fullName,
+            avatar_url: athlete.profile,
+          })
+          .eq("id", userId);
 
-      // Create Strava connection
-      await admin.from("rm_strava_connections").insert({
-        user_id: userId,
-        strava_athlete_id: athlete.id,
-        access_token: tokenData.access_token,
-        refresh_token: tokenData.refresh_token,
-        expires_at: tokenData.expires_at,
-        scope: "read,activity:read_all",
-      });
+        // Create Strava connection
+        await admin.from("rm_strava_connections").insert({
+          user_id: userId,
+          strava_athlete_id: athlete.id,
+          access_token: tokenData.access_token,
+          refresh_token: tokenData.refresh_token,
+          expires_at: tokenData.expires_at,
+          scope: "read,activity:read_all",
+        });
+      } catch (setupError) {
+        // Rollback: delete the auth user so it doesn't become a phantom
+        await admin.auth.admin.deleteUser(userId);
+        throw setupError;
+      }
     }
 
     // Generate magic link to sign in the user
