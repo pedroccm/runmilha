@@ -114,7 +114,8 @@ export async function GET(request: NextRequest) {
     const token_hash = magicLinkUrl.searchParams.get("token") || magicLinkUrl.hash;
 
     // Build the verification URL that Supabase auth will handle
-    const verifyUrl = new URL("/callback", request.url);
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://runmilha.netlify.app";
+    const verifyUrl = new URL("/callback", appUrl);
     verifyUrl.searchParams.set("token_hash", linkData.properties.hashed_token);
     verifyUrl.searchParams.set("type", "magiclink");
 
