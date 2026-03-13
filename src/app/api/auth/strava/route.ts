@@ -42,46 +42,16 @@ export async function GET(request: NextRequest) {
         })
         .eq("user_id", userId);
     } else {
-      // New user — create account via Supabase Auth
       const email = `strava_${athlete.id}@runmilha.app`;
       const fullName = `${athlete.firstname} ${athlete.lastname}`.trim();
 
-      const { data: newUser, error: createError } =
-        await admin.auth.admin.createUser({
-          email,
-          email_confirm: true,
-          user_metadata: {
-            full_name: fullName,
-            avatar_url: athlete.profile,
-            strava_athlete_id: athlete.id,
-          },
-        });
+      // Check if auth user with synthetic email already exists (e.g. previously disconnected)
+      const { data: existingUsers } = await admin.auth.admin.listUsers();
+      const existingAuthUser = existingUsers?.users.find((u) => u.email === email);
 
-      if (createError || !newUser.user) {
-        throw new Error(createError?.message || "Failed to create user");
-      }
-
-      userId = newUser.user.id;
-
-      try {
-        // Poll until the trigger creates rm_users (max 3s)
-        let rmUser = null;
-        for (let i = 0; i < 10; i++) {
-          await new Promise((r) => setTimeout(r, 300));
-          const { data } = await admin.from("rm_users").select("id").eq("id", userId).single();
-          if (data) { rmUser = data; break; }
-        }
-        if (!rmUser) throw new Error("rm_users record not created by trigger");
-
-        await admin
-          .from("rm_users")
-          .update({
-            full_name: fullName,
-            avatar_url: athlete.profile,
-          })
-          .eq("id", userId);
-
-        // Create Strava connection
+      if (existingAuthUser) {
+        // Re-use existing user — just re-create the Strava connection
+        userId = existingAuthUser.id;
         await admin.from("rm_strava_connections").insert({
           user_id: userId,
           strava_athlete_id: athlete.id,
@@ -90,10 +60,52 @@ export async function GET(request: NextRequest) {
           expires_at: tokenData.expires_at,
           scope: "read,activity:read_all",
         });
-      } catch (setupError) {
-        // Rollback: delete the auth user so it doesn't become a phantom
-        await admin.auth.admin.deleteUser(userId);
-        throw setupError;
+      } else {
+        // New user — create account via Supabase Auth
+        const { data: newUser, error: createError } =
+          await admin.auth.admin.createUser({
+            email,
+            email_confirm: true,
+            user_metadata: {
+              full_name: fullName,
+              avatar_url: athlete.profile,
+              strava_athlete_id: athlete.id,
+            },
+          });
+
+        if (createError || !newUser.user) {
+          throw new Error(createError?.message || "Failed to create user");
+        }
+
+        userId = newUser.user.id;
+
+        try {
+          // Poll until the trigger creates rm_users (max 3s)
+          let rmUser = null;
+          for (let i = 0; i < 10; i++) {
+            await new Promise((r) => setTimeout(r, 300));
+            const { data } = await admin.from("rm_users").select("id").eq("id", userId).single();
+            if (data) { rmUser = data; break; }
+          }
+          if (!rmUser) throw new Error("rm_users record not created by trigger");
+
+          await admin
+            .from("rm_users")
+            .update({ full_name: fullName, avatar_url: athlete.profile })
+            .eq("id", userId);
+
+          await admin.from("rm_strava_connections").insert({
+            user_id: userId,
+            strava_athlete_id: athlete.id,
+            access_token: tokenData.access_token,
+            refresh_token: tokenData.refresh_token,
+            expires_at: tokenData.expires_at,
+            scope: "read,activity:read_all",
+          });
+        } catch (setupError) {
+          await admin.auth.admin.deleteUser(userId);
+          throw setupError;
+        }
       }
     }
 
