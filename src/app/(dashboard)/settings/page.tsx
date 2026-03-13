@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { StravaConnectButton } from "@/components/strava/connect-button";
-
 import { PolarConnectButton } from "@/components/polar/connect-button";
+import { DisconnectButton } from "@/components/integrations/disconnect-button";
 import { formatMilhas } from "@/lib/utils";
 
 export default async function SettingsPage() {
@@ -77,9 +77,12 @@ export default async function SettingsPage() {
                   </p>
                 </div>
               </div>
-              <span className="text-xs text-green-500 font-medium bg-green-500/10 px-2 py-1 rounded-full">
-                Active
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-green-500 font-medium bg-green-500/10 px-2 py-1 rounded-full">
+                  Active
+                </span>
+                <DisconnectButton provider="strava" />
+              </div>
             </div>
           ) : (
             <div className="flex items-center justify-between">
@@ -109,9 +112,12 @@ export default async function SettingsPage() {
                   </p>
                 </div>
               </div>
-              <span className="text-xs text-green-500 font-medium bg-green-500/10 px-2 py-1 rounded-full">
-                Active
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-green-500 font-medium bg-green-500/10 px-2 py-1 rounded-full">
+                  Active
+                </span>
+                <DisconnectButton provider="polar" />
+              </div>
             </div>
           ) : (
             <div className="flex items-center justify-between">
