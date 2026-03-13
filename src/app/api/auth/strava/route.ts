@@ -64,8 +64,14 @@ export async function GET(request: NextRequest) {
       userId = newUser.user.id;
 
       try {
-        // Wait for the trigger to create rm_users + rm_wallets, then update with Strava data
-        await new Promise((r) => setTimeout(r, 500));
+        // Poll until the trigger creates rm_users (max 3s)
+        let rmUser = null;
+        for (let i = 0; i < 10; i++) {
+          await new Promise((r) => setTimeout(r, 300));
+          const { data } = await admin.from("rm_users").select("id").eq("id", userId).single();
+          if (data) { rmUser = data; break; }
+        }
+        if (!rmUser) throw new Error("rm_users record not created by trigger");
 
         await admin
           .from("rm_users")

@@ -1,12 +1,29 @@
 import { createClient } from "@/lib/supabase/server";
 import { StravaConnectButton } from "@/components/strava/connect-button";
-import { PolarConnectButton } from "@/components/polar/connect-button";
 import { DisconnectButton } from "@/components/integrations/disconnect-button";
 import { formatMilhas } from "@/lib/utils";
 
-export default async function SettingsPage() {
+const MESSAGES: Record<string, { type: "success" | "error"; text: string }> = {
+  strava_connected: { type: "success", text: "Strava connected successfully!" },
+  strava_denied: { type: "error", text: "Strava connection was denied." },
+  strava_failed: { type: "error", text: "Failed to connect Strava. Please try again." },
+  account_setup: { type: "success", text: "Account set up successfully. You can now log in with email and password." },
+  polar_connected: { type: "success", text: "Polar connected successfully!" },
+  polar_denied: { type: "error", text: "Polar connection was denied." },
+  polar_failed: { type: "error", text: "Failed to connect Polar. Please try again." },
+};
+
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ success?: string; error?: string }>;
+}) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const params = await searchParams;
+
+  const messageKey = params.success ?? params.error;
+  const message = messageKey ? MESSAGES[messageKey] : null;
 
   const { data: profile } = await supabase
     .from("rm_users")
@@ -14,10 +31,8 @@ export default async function SettingsPage() {
     .eq("id", user?.id)
     .single();
 
-  const [{ data: strava }, { data: garmin }, { data: polar }] = await Promise.all([
+  const [{ data: strava }] = await Promise.all([
     supabase.from("rm_strava_connections").select("*").eq("user_id", user?.id).single(),
-    supabase.from("rm_garmin_connections").select("*").eq("user_id", user?.id).single(),
-    supabase.from("rm_polar_connections").select("*").eq("user_id", user?.id).single(),
   ]);
 
   // User's redeemed rewards
@@ -35,6 +50,19 @@ export default async function SettingsPage() {
           Manage your account and connections
         </p>
       </div>
+
+      {/* Feedback banner */}
+      {message && (
+        <div
+          className={`px-4 py-3 rounded-lg text-sm font-medium ${
+            message.type === "success"
+              ? "bg-green-500/10 text-green-500 border border-green-500/20"
+              : "bg-red-500/10 text-red-500 border border-red-500/20"
+          }`}
+        >
+          {message.text}
+        </div>
+      )}
 
       {/* Profile */}
       <div className="bg-card border border-border rounded-xl p-6">
@@ -72,9 +100,7 @@ export default async function SettingsPage() {
                 </div>
                 <div>
                   <p className="font-medium text-sm">Strava</p>
-                  <p className="text-xs text-muted-foreground">
-                    Athlete ID: {strava.strava_athlete_id}
-                  </p>
+                  <p className="text-xs text-muted-foreground">Connected</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -93,41 +119,6 @@ export default async function SettingsPage() {
                 <p className="font-medium text-sm">Strava</p>
               </div>
               <StravaConnectButton />
-            </div>
-          )}
-
-          <div className="border-t border-border" />
-
-          {/* Polar */}
-          {polar ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#D30024]/10 flex items-center justify-center">
-                  <span className="text-[#D30024] font-bold text-sm">P</span>
-                </div>
-                <div>
-                  <p className="font-medium text-sm">Polar</p>
-                  <p className="text-xs text-muted-foreground">
-                    User ID: {polar.polar_user_id}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-green-500 font-medium bg-green-500/10 px-2 py-1 rounded-full">
-                  Active
-                </span>
-                <DisconnectButton provider="polar" />
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#D30024]/10 flex items-center justify-center">
-                  <span className="text-[#D30024] font-bold text-sm">P</span>
-                </div>
-                <p className="font-medium text-sm">Polar</p>
-              </div>
-              <PolarConnectButton />
             </div>
           )}
         </div>
