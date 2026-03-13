@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { refreshStravaToken } from "@/lib/strava/oauth";
 
 const TABLE_MAP: Record<string, string> = {
   strava: "rm_strava_connections",
@@ -32,18 +33,29 @@ export async function DELETE(req: NextRequest) {
   if (provider === "strava") {
     const { data: connection } = await supabase
       .from("rm_strava_connections")
-      .select("access_token")
+      .select("access_token, refresh_token, expires_at")
       .eq("user_id", user.id)
       .single();
 
-    if (connection?.access_token) {
-      await fetch("https://www.strava.com/oauth/deauthorize", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `access_token=${connection.access_token}`,
-      }).catch(() => {
-        // Non-critical: proceed even if revocation fails
-      });
+    if (connection) {
+      try {
+        let accessToken = connection.access_token;
+
+        // Refresh token if expired (Strava tokens expire every 6h)
+        const now = Math.floor(Date.now() / 1000);
+        if (connection.expires_at <= now + 60) {
+          const refreshed = await refreshStravaToken(connection.refresh_token);
+          accessToken = refreshed.access_token;
+        }
+
+        await fetch("https://www.strava.com/oauth/deauthorize", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `access_token=${accessToken}`,
+        });
+      } catch {
+        // Non-critical: proceed with local deletion even if Strava revocation fails
+      }
     }
   }
 
