@@ -10,7 +10,7 @@ export default function DashboardLayout({
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <main className="flex-1 p-6 lg:p-8">{children}</main>
+        <main className="flex-1 p-6 lg:p-8 pt-20 lg:pt-6">{children}</main>
         <footer className="border-t border-border px-6 py-3">
           <p className="text-xs text-muted-foreground text-center">
             RunMilha v{packageJson.version}

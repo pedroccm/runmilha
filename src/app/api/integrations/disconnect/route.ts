@@ -23,6 +23,11 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // If user logged in via Strava (synthetic email), require password setup first
+  if (provider === "strava" && user.email?.endsWith("@runmilha.app")) {
+    return NextResponse.json({ requiresPasswordSetup: true }, { status: 200 });
+  }
+
   // For Strava, revoke token on their side first
   if (provider === "strava") {
     const { data: connection } = await supabase
