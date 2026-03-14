@@ -26,13 +26,13 @@ export default async function MarketplacePage() {
         <div>
           <h1 className="text-2xl font-bold">Marketplace</h1>
           <p className="text-muted-foreground mt-1">
-            Exchange your milhas for rewards
+            Exchange your CoinMilhas for rewards
           </p>
         </div>
         <div className="bg-card border border-border rounded-xl px-4 py-2">
           <p className="text-xs text-muted-foreground">Your Balance</p>
           <p className="font-bold text-primary">
-            {formatMilhas(balance)} milhas
+            {formatMilhas(balance)} CoinMilhas
           </p>
         </div>
       </div>

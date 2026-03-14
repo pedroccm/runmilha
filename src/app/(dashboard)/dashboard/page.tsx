@@ -55,7 +55,7 @@ export default async function DashboardPage() {
           <div>
             <p className="font-medium">Connect your Strava account</p>
             <p className="text-sm text-muted-foreground">
-              Link your Strava to start earning milhas automatically.
+              Link your Strava to start earning CoinMilhas automatically.
             </p>
           </div>
           <Link
@@ -74,17 +74,17 @@ export default async function DashboardPage() {
           <p className="text-3xl font-bold text-primary mt-1">
             {formatMilhas(balance)}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">milhas</p>
+          <p className="text-xs text-muted-foreground mt-1">CoinMilhas</p>
         </div>
         <div className="bg-card border border-border rounded-xl p-5">
           <p className="text-sm text-muted-foreground">Total Earned</p>
           <p className="text-3xl font-bold mt-1">{formatMilhas(totalEarned)}</p>
-          <p className="text-xs text-muted-foreground mt-1">milhas</p>
+          <p className="text-xs text-muted-foreground mt-1">CoinMilhas</p>
         </div>
         <div className="bg-card border border-border rounded-xl p-5">
           <p className="text-sm text-muted-foreground">Total Spent</p>
           <p className="text-3xl font-bold mt-1">{formatMilhas(totalSpent)}</p>
-          <p className="text-xs text-muted-foreground mt-1">milhas</p>
+          <p className="text-xs text-muted-foreground mt-1">CoinMilhas</p>
         </div>
         <div className="bg-card border border-border rounded-xl p-5">
           <p className="text-sm text-muted-foreground">Plan</p>
@@ -138,7 +138,7 @@ export default async function DashboardPage() {
                   <p className="font-semibold text-primary text-sm">
                     +{formatMilhas(activity.milhas_earned ?? 0)}
                   </p>
-                  <p className="text-xs text-muted-foreground">milhas</p>
+                  <p className="text-xs text-muted-foreground">CoinMilhas</p>
                 </div>
               </div>
             ))}

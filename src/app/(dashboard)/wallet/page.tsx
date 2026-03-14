@@ -25,7 +25,7 @@ export default async function WalletPage() {
       <div>
         <h1 className="text-2xl font-bold">Wallet</h1>
         <p className="text-muted-foreground mt-1">
-          Your milhas balance and transaction history
+          Your CoinMilhas balance and transaction history
         </p>
       </div>
 
@@ -33,7 +33,7 @@ export default async function WalletPage() {
       <div className="bg-gradient-to-br from-primary to-primary/80 rounded-2xl p-8 text-primary-foreground">
         <p className="text-sm opacity-80">Current Balance</p>
         <p className="text-5xl font-bold mt-2">{formatMilhas(balance)}</p>
-        <p className="text-sm opacity-80 mt-1">milhas</p>
+        <p className="text-sm opacity-80 mt-1">CoinMilhas</p>
         <div className="flex gap-8 mt-6">
           <div>
             <p className="text-xs opacity-70">Total Earned</p>
@@ -85,7 +85,7 @@ export default async function WalletPage() {
         ) : (
           <div className="bg-card border border-border rounded-xl p-8 text-center">
             <p className="text-muted-foreground">
-              No transactions yet. Start training to earn milhas!
+              No transactions yet. Start training to earn CoinMilhas!
             </p>
           </div>
         )}
