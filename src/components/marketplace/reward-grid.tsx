@@ -74,7 +74,7 @@ export function RewardGrid({
         </div>
       )}
 
-      {/* Not enough CoinMilhas */}
+      {/* Not enough PaceCoin */}
       {!showOnlyAffordable && tooExpensive.length > 0 && (
         <div>
           <h2 className="text-lg font-semibold mb-4 text-muted-foreground">
@@ -146,7 +146,7 @@ function RewardCard({
         )}
         <div className="flex items-center justify-between mt-4">
           <span className="font-bold text-primary">
-            {formatMilhas(reward.cost_milhas)} CoinMilhas
+            {formatMilhas(reward.cost_milhas)} PaceCoin
           </span>
           {outOfStock ? (
             <span className="text-xs text-destructive font-medium">

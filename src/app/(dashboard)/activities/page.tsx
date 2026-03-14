@@ -65,7 +65,7 @@ export default async function ActivitiesPage() {
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-primary">
-                    +{formatMilhas(activity.milhas_earned ?? 0)} CoinMilhas
+                    +{formatMilhas(activity.milhas_earned ?? 0)} PaceCoin
                   </p>
                 </div>
               </div>

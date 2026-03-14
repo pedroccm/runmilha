@@ -85,7 +85,7 @@ export function RedeemButton({
         {loading
           ? "Processing..."
           : confirming
-            ? `Confirm — Spend ${formatMilhas(cost)} CoinMilhas`
+            ? `Confirm — Spend ${formatMilhas(cost)} PaceCoin`
             : "Redeem Reward"}
       </button>
       {confirming && !loading && (

@@ -64,12 +64,12 @@ export default async function RewardDetailPage({
           <div>
             <p className="text-sm text-muted-foreground">Cost</p>
             <p className="text-3xl font-bold text-primary">
-              {formatMilhas(reward.cost_milhas)} CoinMilhas
+              {formatMilhas(reward.cost_milhas)} PaceCoin
             </p>
           </div>
           <div className="text-right">
             <p className="text-sm text-muted-foreground">Your Balance</p>
-            <p className="text-xl font-bold">{formatMilhas(balance)} CoinMilhas</p>
+            <p className="text-xl font-bold">{formatMilhas(balance)} PaceCoin</p>
           </div>
         </div>
 
@@ -86,7 +86,7 @@ export default async function RewardDetailPage({
               disabled
               className="w-full py-3 rounded-lg bg-muted text-muted-foreground font-medium"
             >
-              Not enough CoinMilhas (need{" "}
+              Not enough PaceCoin (need{" "}
               {formatMilhas(reward.cost_milhas - balance)} more)
             </button>
           ) : (

@@ -145,7 +145,7 @@ export default async function SettingsPage({
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {new Date(r.redeemed_at).toLocaleDateString()} &middot;{" "}
-                    {formatMilhas(r.reward?.cost_milhas ?? 0)} CoinMilhas
+                    {formatMilhas(r.reward?.cost_milhas ?? 0)} PaceCoin
                   </p>
                 </div>
                 <div className="text-right">
