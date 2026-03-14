@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { formatMilhas } from "@/lib/utils";
 
 export function RedeemButton({
@@ -28,92 +27,23 @@ export function RedeemButton({
     setError("");
 
     try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      // Fetch wallet
-      const { data: wallet } = await supabase
-        .from("rm_wallets")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-
-      if (!wallet || wallet.balance < cost) {
-        setError("Not enough milhas");
-        setLoading(false);
-        return;
-      }
-
-      // Fetch reward for stock check and promo code generation
-      const { data: reward } = await supabase
-        .from("rm_rewards")
-        .select("*")
-        .eq("id", rewardId)
-        .single();
-
-      if (!reward) throw new Error("Reward not found");
-      if (reward.remaining_stock !== null && reward.remaining_stock <= 0) {
-        setError("Out of stock");
-        setLoading(false);
-        return;
-      }
-
-      // Generate promo code
-      const code = `${reward.promo_code_prefix || "RM"}-${Math.random()
-        .toString(36)
-        .substring(2, 8)
-        .toUpperCase()}`;
-
-      const newBalance = wallet.balance - cost;
-
-      // Deduct from wallet
-      await supabase
-        .from("rm_wallets")
-        .update({
-          balance: newBalance,
-          total_spent: wallet.total_spent + cost,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", wallet.id);
-
-      // Create transaction
-      const { data: transaction } = await supabase
-        .from("rm_transactions")
-        .insert({
-          user_id: user.id,
-          wallet_id: wallet.id,
-          type: "spend",
-          amount: -cost,
-          balance_after: newBalance,
-          description: `Redeemed: ${reward.title}`,
-          reference_type: "redemption",
-        })
-        .select()
-        .single();
-
-      // Create redemption
-      await supabase.from("rm_redemptions").insert({
-        user_id: user.id,
-        reward_id: rewardId,
-        transaction_id: transaction?.id,
-        promo_code: code,
-        status: "active",
-        expires_at: reward.valid_until,
+      const res = await fetch("/api/rewards/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rewardId }),
       });
 
-      // Decrease stock
-      if (reward.remaining_stock !== null) {
-        await supabase
-          .from("rm_rewards")
-          .update({ remaining_stock: reward.remaining_stock - 1 })
-          .eq("id", rewardId);
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Something went wrong");
+        return;
       }
 
-      setPromoCode(code);
+      setPromoCode(data.promoCode);
       router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+    } catch {
+      setError("Something went wrong");
     } finally {
       setLoading(false);
     }
