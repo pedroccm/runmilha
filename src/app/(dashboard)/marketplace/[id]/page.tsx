@@ -26,7 +26,7 @@ export default async function RewardDetailPage({
     .eq("user_id", user?.id)
     .single();
 
-  const balance = wallet?.balance ?? 0;
+  const balance = Math.round((wallet?.balance ?? 0) * 100) / 100;
   const canAfford = balance >= reward.cost_milhas;
   const outOfStock =
     reward.remaining_stock !== null && reward.remaining_stock <= 0;

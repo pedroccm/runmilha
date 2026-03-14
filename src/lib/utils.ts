@@ -8,8 +8,13 @@ export function cn(...inputs: ClassValue[]) {
 export function formatMilhas(amount: number): string {
   return new Intl.NumberFormat("pt-BR", {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 1,
+    maximumFractionDigits: 2,
   }).format(amount);
+}
+
+/** Round to 2 decimal places to avoid floating-point comparison issues */
+export function roundPaceCoins(amount: number): number {
+  return Math.round(amount * 100) / 100;
 }
 
 export function formatDistance(km: number, unit: "km" | "mi" = "km"): string {

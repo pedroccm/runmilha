@@ -39,7 +39,8 @@ export async function POST(req: NextRequest) {
     .eq("user_id", user.id)
     .single();
 
-  if (!wallet || wallet.balance < reward.cost_milhas) {
+  const balance = Math.round((wallet?.balance ?? 0) * 100) / 100;
+  if (!wallet || balance < reward.cost_milhas) {
     return NextResponse.json({ error: "Not enough milhas" }, { status: 402 });
   }
 

@@ -24,8 +24,9 @@ export function RewardGrid({
 }) {
   const [showOnlyAffordable, setShowOnlyAffordable] = useState(false);
 
-  const affordable = rewards.filter((r) => balance >= r.cost_milhas);
-  const tooExpensive = rewards.filter((r) => balance < r.cost_milhas);
+  const roundedBalance = Math.round(balance * 100) / 100;
+  const affordable = rewards.filter((r) => roundedBalance >= r.cost_milhas);
+  const tooExpensive = rewards.filter((r) => roundedBalance < r.cost_milhas);
 
   return (
     <>
@@ -108,7 +109,7 @@ function RewardCard({
   reward: Reward;
   balance: number;
 }) {
-  const canAfford = balance >= reward.cost_milhas;
+  const canAfford = Math.round(balance * 100) / 100 >= reward.cost_milhas;
   const outOfStock =
     reward.remaining_stock !== null && reward.remaining_stock <= 0;
 
