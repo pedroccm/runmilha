@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { StravaConnectButton } from "@/components/strava/connect-button";
 import { DisconnectButton } from "@/components/integrations/disconnect-button";
+import { UnitToggle } from "@/components/settings/unit-toggle";
 import { formatMilhas } from "@/lib/utils";
 
 const MESSAGES: Record<string, { type: "success" | "error"; text: string }> = {
@@ -83,6 +84,10 @@ export default async function SettingsPage({
             <span className="text-sm font-medium">
               {profile?.plan?.name ?? "Free"} ({profile?.plan?.conversion_rate ?? 0.5}x)
             </span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-muted-foreground">Distance unit</span>
+            <UnitToggle current={(profile?.unit_preference as "km" | "mi") ?? "km"} />
           </div>
         </div>
       </div>
