@@ -69,12 +69,6 @@ export function Sidebar() {
     <>
       {/* Mobile top bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-30 h-14 flex items-center justify-between px-4 border-b border-border bg-card">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-xs">RM</span>
-          </div>
-          <span className="font-bold">RunMilha</span>
-        </Link>
         <button
           onClick={() => setOpen(true)}
           className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
@@ -84,6 +78,12 @@ export function Sidebar() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
           </svg>
         </button>
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+            <span className="text-primary-foreground font-bold text-xs">RM</span>
+          </div>
+          <span className="font-bold">RunMilha</span>
+        </Link>
       </div>
 
       {/* Backdrop */}

@@ -19,7 +19,7 @@ export default async function PlansPage() {
       <div>
         <h1 className="text-2xl font-bold">Plans</h1>
         <p className="text-muted-foreground mt-1">
-          Upgrade to earn more milhas per kilometer
+          Upgrade to earn more PaceCoin per kilometer
         </p>
       </div>
 
@@ -67,7 +67,7 @@ export default async function PlansPage() {
                   {plan.conversionRate}x
                 </span>
                 <p className="text-xs text-muted-foreground mt-1">
-                  milhas per km
+                  PaceCoin per km
                 </p>
               </div>
 
