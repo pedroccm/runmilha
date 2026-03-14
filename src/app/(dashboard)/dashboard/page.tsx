@@ -38,10 +38,7 @@ export default async function DashboardPage() {
   const balance = wallet?.balance ?? 0;
   const totalEarned = wallet?.total_earned ?? 0;
   const totalSpent = wallet?.total_spent ?? 0;
-  const totalKm = (activities || []).reduce(
-    (sum, a) => sum + (a.distance_km || 0),
-    0
-  );
+  const unit = (profile?.unit_preference as "km" | "mi") ?? "km";
 
   return (
     <div className="space-y-8">
@@ -132,7 +129,7 @@ export default async function DashboardPage() {
                       {activity.name || activity.type}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {formatDistance(activity.distance_km)} km &middot;{" "}
+                      {formatDistance(activity.distance_km, unit)} {unit} &middot;{" "}
                       {new Date(activity.start_date).toLocaleDateString()}
                     </p>
                   </div>

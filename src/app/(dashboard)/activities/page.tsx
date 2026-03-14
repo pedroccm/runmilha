@@ -5,12 +5,21 @@ export default async function ActivitiesPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: activities } = await supabase
-    .from("rm_activities")
-    .select("*")
-    .eq("user_id", user?.id)
-    .order("start_date", { ascending: false })
-    .limit(100);
+  const [{ data: activities }, { data: profile }] = await Promise.all([
+    supabase
+      .from("rm_activities")
+      .select("*")
+      .eq("user_id", user?.id)
+      .order("start_date", { ascending: false })
+      .limit(100),
+    supabase
+      .from("rm_users")
+      .select("unit_preference")
+      .eq("id", user?.id)
+      .single(),
+  ]);
+
+  const unit = (profile?.unit_preference as "km" | "mi") ?? "km";
 
   return (
     <div className="space-y-8">
@@ -65,7 +74,7 @@ export default async function ActivitiesPage() {
                 <div>
                   <p className="text-xs text-muted-foreground">Distance</p>
                   <p className="font-semibold">
-                    {formatDistance(activity.distance_km)} km
+                    {formatDistance(activity.distance_km, unit)} {unit}
                   </p>
                 </div>
                 <div>
@@ -82,7 +91,8 @@ export default async function ActivitiesPage() {
                     {activity.moving_time_seconds
                       ? formatPace(
                           activity.distance_km,
-                          activity.moving_time_seconds
+                          activity.moving_time_seconds,
+                          unit
                         )
                       : "-"}
                   </p>
